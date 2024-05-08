@@ -1,3 +1,4 @@
+
 import MovieItem from './MovieItem';
 import { Spinner } from 'flowbite-react';
 

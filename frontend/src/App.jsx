@@ -19,25 +19,47 @@ export default function App() {
       });
     setLoading(false);
   }
-  const fetchRating = async () => {
+
+  const fetchRating = async (Arr) => {
     setLoading(true);
-    setMovies([])
-    await fetch('http://localhost:8000/movies')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        if (order) {
-          setOrder(!order)
-          return setMovies(data.sort(function (a, b) {
-            return b.rating - a.rating
-          }));
-        }
-        setOrder(!order)
-        return setMovies(data.sort(function (a, b) {
-          return a.rating - b.rating
-        }));
+    if (order) {
+      setOrder(!order)
+      Arr.sort(function (a, b) {
+        return b.rating - a.rating
       });
-    setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    } else {
+      setOrder(!order)
+      Arr.sort(function (a, b) {
+        return a.rating - b.rating
+      });
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+  }
+  const fetchDate = async (Arr) => {
+    setLoading(true);
+    if (order) {
+      setOrder(!order)
+      Arr.sort(function (a, b) {
+
+        return b.year - a.year
+      });
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    } else {
+      setOrder(!order)
+      Arr.sort(function (a, b) {
+        return a.year - b.year
+      });
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   }
 
 
@@ -48,9 +70,16 @@ export default function App() {
   return (
     <Layout>
       <Heading />
-      <div className='bg-slate-800 mb-4 w-full h-[30px]'>
-        <button onClick={() => fetchRating(!order)} className='bg-green-600 rounded p-2' >
-          {order ? <p> rating ^</p> : <p>rating v</p>}
+      <div className=' mb-6 w-full h-[auto] flex gap-4 p-2 justify-center '>
+        <button onClick={() => fetchRating(movies)} className='bg-cyan-600 rounded p-2  w-20 text-center ' >
+          {order ? <p className="after:content-['^'] after:text-xs after:text-black after:opacity-0 hover:after:opacity-100" >Rating </p>
+            :
+            <p className="after:content-['v'] after:text-xs after:text-black after:opacity-0 hover:after:opacity-100" >Rating </p>}
+        </button>
+        <button onClick={() => fetchDate(movies)} className='bg-cyan-600 rounded p-2 w-20 text-center ' >
+          {order ? <p className="after:content-['^'] after:text-xs after:text-black after:opacity-0 hover:after:opacity-100">Date </p >
+            :
+            <p className="after:content-['v'] after:text-xs after:text-black after:opacity-0 hover:after:opacity-100">date </p>}
         </button>
       </div>
       <MovieList loading={loading} movies={movies} />
