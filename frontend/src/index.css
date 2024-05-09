@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.overflowCustom {
+	overflow: auto;
+	height: 20vh;
+	overflow-x: hidden;
+}

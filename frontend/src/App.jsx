@@ -2,22 +2,32 @@ import { useEffect, useState } from 'react';
 import Layout from './Components/Layout';
 import MovieList from './Components/MovieList';
 import Heading from './Components/Heading';
+import { Button, Dropdown } from 'flowbite-react';
 
 export default function App() {
   const [movies, setMovies] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState(true);
 
+  const directUp = "after:content-['v'] after:text-sm    after:leading-9 after:text-left   after:text-white after:opacity-0 hover:after:opacity-100 ";
+  const directDown = "after:content-['v'] after:rotate-180  after:text-sm after:text-left   after:leading-9  after:text-white after:opacity-0 hover:after:opacity-100";
   const fetchMovies = async () => {
     setLoading(true);
 
     await fetch('http://localhost:8000/movies')
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         setMovies(data);
       });
+
+    await fetch('http://localhost:8000/genre')
+      .then(response => response.json())
+      .then(data => {
+        setGenres(data);
+      });
     setLoading(false);
+
   }
 
   const fetchOrder = async (Arr, Type) => {
@@ -66,6 +76,13 @@ export default function App() {
     }
   }
 
+  const fetchGenre = async (id) => {
+    await fetch(`http://localhost:8000/moviegenre/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      });
+  }
 
   useEffect(() => {
     fetchMovies();
@@ -74,17 +91,19 @@ export default function App() {
   return (
     <Layout>
       <Heading />
-      <section className=' mb-6 w-full h-[auto] flex gap-4 p-2 justify-center '>
-        <button onClick={() => fetchOrder(movies, "rating")} className='bg-cyan-600 rounded p-2  w-20 text-center ' >
-          {order ? <p className="after:content-['^'] after:text-xs after:ms-1 after:text-black after:opacity-0 hover:after:opacity-100" >Rating</p>
-            :
-            <p className="after:content-['v'] after:text-xs after:ms-1 after:text-black after:opacity-0 hover:after:opacity-100" >Rating</p>}
-        </button>
-        <button onClick={() => fetchOrder(movies, "date")} className='bg-cyan-600 rounded p-2 w-20 text-center ' >
-          {order ? <p className="after:content-['^'] after:text-xs after:ms-1 after:text-black after:opacity-0 hover:after:opacity-100">Date</p >
-            :
-            <p className="after:content-['v'] after:text-xs after:ms-1 after:text-black after:opacity-0 hover:after:opacity-100">Date</p>}
-        </button>
+
+      <section className=' mb-24 w-full h-[auto] flex gap-4 p-2 justify-center '>
+        <Button size="lg" onClick={() => fetchOrder(movies, "rating")} className={order ? directUp : directDown}>rating</Button>
+        <Button size="lg" onClick={() => fetchOrder(movies, "rating")} className={order ? directUp : directDown}>date</Button>
+        {
+          genres.length > 0 &&
+          <Dropdown label="Dropdown button" className='overflowCustom ' >
+            {
+              genres && genres.map((el) =>
+                <Dropdown.Item key={el.id} onClick={() => fetchGenre(el.id)}>{el.name}</Dropdown.Item>
+              )
+            }
+          </Dropdown>}
       </section>
       <MovieList loading={loading} movies={movies} />
     </Layout>
